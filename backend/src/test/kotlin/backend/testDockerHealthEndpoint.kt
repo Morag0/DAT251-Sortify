@@ -16,7 +16,7 @@ class DockerIntegrationTests {
 
     // Create a Testcontainers-managed container using the specified Docker image and the port it exposes
     companion object {
-        private val backendContainer = GenericContainer<Nothing>("sortify-backend-image:latest")
+        private val backendContainer = GenericContainer<Nothing>("sortify-backend:latest")
             .withExposedPorts(9876)
 
         // Runs once before all tests in this class. Starts the container before any tests are run
