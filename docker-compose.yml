@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "9876:9876"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
