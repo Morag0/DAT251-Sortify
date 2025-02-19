@@ -23,8 +23,10 @@ out/
 
 # Exclude Node, Astro, and Vue (remove if not used)
 .astro
-test/
 docs/_book
+
+# Ignore test folder at root only
+/test/
 
 # OS-specific
 *.swp
