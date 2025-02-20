@@ -31,11 +31,26 @@ jobs:
       run: chmod +x gradlew
       working-directory: backend
 
-    - name: Build with Gradle
-      run: ./gradlew build --no-daemon
+    - name: Build JAR with Gradle
       working-directory: backend
+      run: ./gradlew bootJar --no-daemon  # Ensure JAR is built before Docker
 
-    - name: Test with Gradle
+    - name: Start Backend with Docker Compose
+      run: docker-compose up -d  # Start backend in detached mode
+
+    - name: Wait for Backend to be Ready
+      run: |
+        for i in {1..30}; do
+          if curl -s http://localhost:9876 | grep "OK"; then
+            echo "✅ Backend is up!"
+            exit 0
+          fi
+          echo "⏳ Waiting for backend..."
+          sleep 5
+        done
+        echo "❌ Backend did not start in time" && exit 1
+
+    - name: Run Tests
       run: ./gradlew test --no-daemon
       working-directory: backend
 
@@ -61,5 +76,5 @@ jobs:
         if-no-files-found: warn
         retention-days: 7
     
-    - name: Build Docker image
-      run: docker build -t sortify-backend ./backend
+    - name: Stop Backend
+      run: docker-compose down  # Stop and remove the container

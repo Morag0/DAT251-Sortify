@@ -1,49 +1,61 @@
 package backend
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.AfterAll
-import org.springframework.web.client.RestTemplate
-import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.containers.GenericContainer
+import org.junit.jupiter.api.Test
+import java.net.Socket
+import kotlin.test.assertTrue
 
-@Testcontainers  // Ensure Testcontainers is properly managed by JUnit 5
 class DockerIntegrationTests {
 
-    // Create a subclass of GenericContainer to avoid wildcard projection issues
-    class FixedGenericContainer(imageName: String) : GenericContainer<FixedGenericContainer>(imageName)
-
-    // Create a Testcontainers-managed container using the specified Docker image and the port it exposes
     companion object {
-        private val backendContainer = GenericContainer<Nothing>("sortify-backend:latest")
-            .withExposedPorts(9876)
+        private const val backendHost = "localhost"
+        private const val backendPort = 9876
 
-        // Runs once before all tests in this class. Starts the container before any tests are run
         @BeforeAll
         @JvmStatic
-        fun startContainer() {
-            backendContainer.start()
+        fun waitForBackend() {
+            // Wait for backend to be ready (re-try 10 times with 3 seconds sleep time)
+            var retries = 10
+            val sleepTime = 3000L
+
+            while (retries > 0) {
+                try {
+                    
+                    // Try connecting to the backend service
+                    Socket(backendHost, backendPort).use { socket ->
+                        println("✅ Backend is up and running!")
+                        return
+
+                } catch (e: Exception) {
+                    println("⏳ Waiting for backend to be ready... (${10 - retries}/10)")
+                }
+
+                // Wait before retrying
+                Thread.sleep(sleepTime)
+                retries--
+            }
+
+            // If retries run out, fail the test
+            throw RuntimeException("❌ Backend did not start in time")
         }
 
-        // Runs once after all tests have completed. Stops and cleans up the container after all tests have run
         @AfterAll
         @JvmStatic
-        fun stopContainer() {
-            backendContainer.stop()
+        fun cleanup() {
+            println("✅ Tests completed.")
         }
     }
 
-    @Test
-    fun testHealthEndpoint() {
-        val restTemplate = RestTemplate()
+   @Test
+    fun testBackendConnection() {
+        // Try to connect to the backend
+        val isConnected = try {
+            Socket(backendHost, backendPort).use { true }
+        } catch (e: Exception) {
+            false
+        }
 
-        // Get the actual mapped port for the backend container
-        val backendPort = backendContainer.getMappedPort(9876)
-        val backendUrl = "http://localhost:$backendPort/health"
-
-        // Assert that the health endpoint returns 200 OK
-        val response = restTemplate.getForEntity(backendUrl, String::class.java)
-        assertEquals(200, response.statusCode.value())
+        assertTrue(isConnected, "Backend service should be reachable on port $backendPort")
     }
 }

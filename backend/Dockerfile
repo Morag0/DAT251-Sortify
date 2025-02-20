@@ -1,14 +1,27 @@
-# Use a lightweight Java 17 base image
-FROM eclipse-temurin:17-jdk-alpine
+# Start from a base image that has Gradle and JDK
+FROM gradle:7.6-jdk17-alpine as builder
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the JAR file (assuming you have a Spring Boot application)
-COPY build/libs/*.jar app.jar
+# Copy the Gradle build files into the container
+COPY gradlew gradlew
+COPY gradle /app/gradle
+COPY build.gradle.kts settings.gradle.kts gradle /app/
+COPY src /app/src
 
-# Expose the application's port
-EXPOSE 9876
+# Build the application JAR with Gradle
+RUN chmod +x ./gradlew
+RUN ./gradlew clean bootJar
 
-# Run the application
+# Final image: Use the JAR built from the first stage
+FROM eclipse-temurin:17-jdk-alpine
+
+WORKDIR /app
+
+# Copy the JAR from the builder image
+COPY --from=builder /app/build/libs/backend-0.0.1-SNAPSHOT.jar /app/app.jar
+
+# Command to run the backend
 CMD ["java", "-jar", "app.jar"]
+
+EXPOSE 9876

@@ -2,8 +2,26 @@ version: '3.8'
 
 services:
   backend:
-    build: .
+
+    # Use the Dockerfile in the backend directory to build the image
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    working_dir: /app
+    command: ["java", "-jar", "app.jar"]
+
+    # Expose the port 9876 to the host machine
     ports:
       - "9876:9876"
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
+
+    # Mount the backend directory to the /app directory inside the container
+    volumes:
+      - ./backend:/app
+    
+#    # Make sure network exists for connection to frontend
+#     networks:
+#       - sortify-network
+
+# # Define the Docker network
+# networks:
+#   - sortify-network
