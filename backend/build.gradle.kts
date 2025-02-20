@@ -62,6 +62,13 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
+tasks.test {
+	testLogging {
+		showStandardStreams = true // Enable println outputs in tests
+		events("passed", "skipped", "failed") // Show results for all test events
+	}
+}
+
 tasks.jacocoTestReport{
 	dependsOn(tasks.test)
 	reports{
