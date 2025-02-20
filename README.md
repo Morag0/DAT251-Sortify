@@ -59,7 +59,10 @@ docker run -p 9876:9876 sortify-backend
 
 The backend should now be running on http://localhost:9876. You can access it by visiting this URL in your browser or through an API client like Postman.
 
-**4️⃣ Troubleshoot**
+**4️⃣ Run the Backend using docker-compose (recommended)**
+How do I explain in easy steps how to build and run the backend? And how do I explain that the first build will take longer than the next ones? And how do I tell them that the backend can run while they code?
+
+**0️⃣ Troubleshoot**
 If you run into trouble with the program
 
 **1.** Clean Gradle caches and restart the build:

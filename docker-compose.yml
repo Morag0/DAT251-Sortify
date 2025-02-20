@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   backend:
-
+    image: sortify-backend
     # Use the Dockerfile in the backend directory to build the image
     build:
       context: ./backend
@@ -18,6 +16,9 @@ services:
     volumes:
       - ./backend:/app
     
+
+
+# frontend:    
 #    # Make sure network exists for connection to frontend
 #     networks:
 #       - sortify-network

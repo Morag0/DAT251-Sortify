@@ -1,0 +1,10 @@
+# Exclude unnecessary files but allow Gradle and source code
+.dockerignore
+.git
+.gradle/
+bin/
+!gradlew
+!gradle/
+!src/
+!*.gradle.kts
+!build/libs/  # Ensure built JARs are copied

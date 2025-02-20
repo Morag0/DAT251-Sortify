@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import java.net.Socket
 import kotlin.test.assertTrue
 
+@Test
 class DockerIntegrationTests {
 
     companion object {
