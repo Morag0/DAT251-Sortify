@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test
 import java.net.Socket
 import kotlin.test.assertTrue
 
-@Test
 class DockerIntegrationTests {
 
     companion object {
@@ -24,9 +23,10 @@ class DockerIntegrationTests {
                 try {
                     
                     // Try connecting to the backend service
-                    Socket(backendHost, backendPort).use { socket ->
+                    Socket(backendHost, backendPort).use { _ ->
                         println("✅ Backend is up and running!")
-                        return
+                    }
+                    return // Exit function if connection is successful
 
                 } catch (e: Exception) {
                     println("⏳ Waiting for backend to be ready... (${10 - retries}/10)")
