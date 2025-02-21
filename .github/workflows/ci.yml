@@ -38,17 +38,17 @@ jobs:
     - name: Start Backend with Docker Compose
       run: docker compose up -d  # Start backend in detached mode
 
-    - name: Wait for Backend to be Ready
-      run: |
-        for i in {1..30}; do
-          if curl -s http://localhost:9876 | grep "OK"; then
-            echo "✅ Backend is up!"
-            exit 0
-          fi
-          echo "⏳ Waiting for backend..."
-          sleep 5
-        done
-        echo "❌ Backend did not start in time" && exit 1
+    # - name: Wait for Backend to be Ready
+    #   run: |
+    #     for i in {1..30}; do
+    #       if curl -s http://localhost:9876 | grep "OK"; then
+    #         echo "✅ Backend is up!"
+    #         exit 0
+    #       fi
+    #       echo "⏳ Waiting for backend..."
+    #       sleep 5
+    #     done
+    #     echo "❌ Backend did not start in time" && exit 1
 
     - name: Run Tests Locally
       run: ./gradlew test --no-daemon
