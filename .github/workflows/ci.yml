@@ -37,6 +37,9 @@ jobs:
 
     - name: Verify Docker Compose Version
       run: docker compose version # Check if Docker Compose is installed
+    
+    - name: Build Docker Image
+      run: docker compose build --no-cache  # Ensures the latest image is built before starting
 
     - name: Start Backend with Docker Compose
       run: docker compose up -d  # Start backend in detached mode
@@ -51,14 +54,19 @@ jobs:
       run: |
         CONTAINER_ID=$(docker ps -qf "name=sortify-backend-container")
         BACKEND_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER_ID)
-        
+    
+        echo "🔍 Checking backend health at http://$BACKEND_IP:9876/actuator/health"
+    
         for i in {1..30}; do
-          if curl -s http://$BACKEND_IP:9876/actuator/health | grep '"status":"UP"'; then
-            echo "✅ Backend is up!"
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://$BACKEND_IP:9876/actuator/health)
+          
+          if [[ "$RESPONSE" == "200" ]]; then
+            echo "✅ Backend is UP!"
             exit 0
           fi
-          echo "⏳ Waiting for backend ($i/30)..."
-          sleep 60
+          
+          echo "⏳ Waiting for backend ($i/30)... (HTTP Status: $RESPONSE)"
+          sleep 10
         done
         
         echo "❌ Backend did not start in time" && exit 1
