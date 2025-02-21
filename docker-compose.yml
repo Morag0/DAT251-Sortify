@@ -2,6 +2,7 @@ services:
   backend:
     image: sortify-backend
     # Use the Dockerfile in the backend directory to build the image
+    container_name: sortify-backend-container
     build:
       context: ./backend
       dockerfile: Dockerfile

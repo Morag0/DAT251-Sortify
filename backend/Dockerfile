@@ -1,30 +1,33 @@
-# Stage 1: Start from a base image that has Gradle and JDK
+# 1: Build the JAR file
 FROM gradle:7.6-jdk17-alpine AS builder
 
 WORKDIR /app
 
-# Copy the Gradle build files into the container
+# Copy Gradle-related files first to leverage caching
 COPY gradlew gradlew
-COPY gradle /app/gradle
-COPY build.gradle.kts settings.gradle.kts gradle /app/
-COPY src /app/src
+COPY gradle gradle
+COPY build.gradle.kts settings.gradle.kts ./
 
-# Build the application JAR with Gradle and verify that the JAR is built
-RUN chmod +x ./gradlew
-RUN ./gradlew clean bootJar && ls -l /app/build/
+# Copy the source code
+COPY src src
 
-# Stage 2: Use the JAR built from the first stage
+# Ensure permissions for Gradle wrapper, build the JAR file (placed in /app), and verify that the JAR exists
+RUN chmod +x ./gradlew 
+RUN ./gradlew clean bootJar
+RUN ls -l /app/build/libs/
+
+# 2: Run the application
 FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
-# Copy the JAR from the builder image
+# Copy the built JAR from the builder stage
 COPY --from=builder /app/build/libs/*.jar /app/app.jar
 
-# Verify that the JAR file is copied correctly
+# Verify JAR is copied
 RUN ls -l /app/
 
-# Command to run the backend
-CMD ["java", "-jar", "/app/app.jar"]
+# Command to run the application
+CMD ["java", "-jar", "/app/*.jar"]
 
 EXPOSE 9876
