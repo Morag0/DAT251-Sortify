@@ -36,7 +36,7 @@ jobs:
       run: ./gradlew bootJar --no-daemon  # Ensure JAR is built before Docker
 
     - name: Start Backend with Docker Compose
-      run: docker compose up -d  # Start backend in detached mode
+      run: docker-compose up -d  # Start backend in detached mode
 
     - name: Wait for Backend to be Ready
       run: |
