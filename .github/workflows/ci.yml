@@ -58,7 +58,7 @@ jobs:
             exit 0
           fi
           echo "⏳ Waiting for backend ($i/30)..."
-          sleep 5
+          sleep 60
         done
         
         echo "❌ Backend did not start in time" && exit 1
