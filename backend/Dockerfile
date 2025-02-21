@@ -14,7 +14,8 @@ COPY src src
 # Ensure permissions for Gradle wrapper, build the JAR file (placed in /app), and verify that the JAR exists
 RUN chmod +x ./gradlew 
 RUN ./gradlew clean bootJar
-RUN ls -l /app/build/libs/
+# RUN ls -l /app/build/libs/
+RUN ls -l /app/
 
 # 2: Run the application
 FROM eclipse-temurin:17-jdk-alpine
@@ -22,12 +23,12 @@ FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 
 # Copy the built JAR from the builder stage
-COPY --from=builder /app/build/libs/*.jar /app/build/libs/app.jar
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
 
 # Verify JAR is copied
 RUN ls -l /app/
 
 # Command to run the application
-CMD ["java", "-jar", "/app/build/libs/*.jar"]
+CMD ["java", "-jar", "/app/app.jar"]
 
 EXPOSE 9876

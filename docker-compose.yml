@@ -7,15 +7,11 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     working_dir: /app
-    command: ["java", "-jar", "app.jar"]
+    command: ["java", "-jar", "/app/app.jar"]
 
     # Expose the port 9876 to the host machine
     ports:
       - "9876:9876"
-
-    # Mount the backend directory to the /app directory inside the container
-    volumes:
-      - ./backend:/app
     
 
 
