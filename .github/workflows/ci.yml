@@ -49,6 +49,9 @@ jobs:
     
     - name: Show Backend Logs
       run: docker logs sortify-backend-container || echo "No logs avaliable" # Check logs for any errors
+    
+    - name: Check if the App is Actually Listening on Port 9876
+      run: docker exec -it sortify-backend-container netstat -tlnp | grep 9876 || echo "App is not listening on port 9876"
 
     - name: Wait for Backend to be Ready
       run: |
@@ -56,6 +59,7 @@ jobs:
         BACKEND_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER_ID)
     
         echo "🔍 Checking backend health at http://$BACKEND_IP:9876/actuator/health"
+        sleep 10
     
         for i in {1..30}; do
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://$BACKEND_IP:9876/actuator/health)
