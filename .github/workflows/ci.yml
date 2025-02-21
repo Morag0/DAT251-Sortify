@@ -50,8 +50,12 @@ jobs:
         done
         echo "❌ Backend did not start in time" && exit 1
 
-    - name: Run Tests
+    - name: Run Tests Locally
       run: ./gradlew test --no-daemon
+      working-directory: backend
+
+    - name: Run Tests in Docker
+      run: docker run --network="host" -e CI=true sortify-backend ./gradlew test --no-daemon
       working-directory: backend
 
     - name: Upload Test Result
