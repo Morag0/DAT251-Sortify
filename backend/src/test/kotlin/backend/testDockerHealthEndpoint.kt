@@ -9,15 +9,16 @@ import kotlin.test.assertTrue
 class DockerIntegrationTests {
 
     companion object {
-        private const val backendHost = "localhost"
+        // Use Docker host IP when running in CI, otherwise use localhost
+        private const val backendHost = if (System.getenv("CI") == "true") "host.docker.internal" else "localhost"
         private const val backendPort = 9876
 
         @BeforeAll
         @JvmStatic
         fun waitForBackend() {
-            // Wait for backend to be ready (re-try 10 times with 3 seconds sleep time)
+            // Wait for backend to be ready (re-try 10 times with 1 seconds sleep time)
             var retries = 10
-            val sleepTime = 3000L
+            val sleepTime = 1000L
 
             while (retries > 0) {
                 try {
@@ -34,6 +35,7 @@ class DockerIntegrationTests {
 
                 // Wait before retrying
                 Thread.sleep(sleepTime)
+                sleepTime *= 2  // Exponential backoff
                 retries--
             }
 
