@@ -22,12 +22,12 @@ FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 
 # Copy the built JAR from the builder stage
-COPY --from=builder /app/build/libs/*.jar /app/app.jar
+COPY --from=builder /app/build/libs/*.jar /app/build/libs/app.jar
 
 # Verify JAR is copied
 RUN ls -l /app/
 
 # Command to run the application
-CMD ["java", "-jar", "/app/*.jar"]
+CMD ["java", "-jar", "/app/build/libs/*.jar"]
 
 EXPOSE 9876
