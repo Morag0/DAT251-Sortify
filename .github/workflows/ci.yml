@@ -48,7 +48,7 @@ jobs:
       run: docker ps -a # Check if the container is running
     
     - name: Show Backend Logs
-      run: docker logs sortify-backend-container # Check logs for any errors
+      run: docker logs sortify-backend-container || echo "No logs avaliable" # Check logs for any errors
 
     - name: Wait for Backend to be Ready
       run: |
