@@ -1,18 +1,16 @@
 services:
   backend:
     image: sortify-backend
-    # Use the Dockerfile in the backend directory to build the image
     container_name: sortify-backend-container
     build:
       context: ./backend
       dockerfile: Dockerfile
-    working_dir: /app
-    command: ["java", "-jar", "/app/app.jar"]
-
-    # Expose the port 9876 to the host machine
     ports:
       - "9876:9876"
     
+    # Set the active profile to docker
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
 
 
 # frontend:    

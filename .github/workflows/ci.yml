@@ -34,7 +34,7 @@ jobs:
     - name: Build JAR with Gradle
       working-directory: backend
       run: ./gradlew bootJar --no-daemon
-      
+
     - name: Verify Docker Compose Version
       run: docker compose version
     
@@ -47,9 +47,6 @@ jobs:
     - name: Show Backend Logs
       run: docker logs sortify-backend-container || echo "No logs avaliable"
     
-    - name: List all running containers
-      run: docker ps -a
-
     - name: Check Running Processes Inside the Container
       run: docker exec sortify-backend-container ps aux || echo "No processes running"
 
@@ -59,35 +56,13 @@ jobs:
     - name: Check if the App is Actually Listening on Port 9876
       run: docker exec -it sortify-backend-container netstat -tlnp | grep 9876 || echo "App is not listening on port 9876"
 
-    # - name: Wait for Backend to be Ready
-    #   run: |
-    #     CONTAINER_ID=$(docker ps -qf "name=sortify-backend-container")
-    #     BACKEND_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER_ID)
-    
-    #     echo "🔍 Checking backend health at http://$BACKEND_IP:9876/actuator/health"
-    #     sleep 10
-    
-    #     for i in {1..30}; do
-    #       RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://$BACKEND_IP:9876/actuator/health)
-          
-    #       if [[ "$RESPONSE" == "200" ]]; then
-    #         echo "✅ Backend is UP!"
-    #         exit 0
-    #       fi
-          
-    #       echo "⏳ Waiting for backend ($i/30)... (HTTP Status: $RESPONSE)"
-    #       sleep 10
-    #     done
-        
-    #     echo "❌ Backend did not start in time" && exit 1
-
-    # - name: Run Tests Locally
-    #   run: ./gradlew clean test --no-daemon
-    #   working-directory: backend
+    - name: Manually Check Spring Boot Health Endpoint
+      run: |
+        sleep 10  # Wait for backend to start
+        curl -v http://localhost:9876/actuator/health || echo "❌ Backend is not responding"
 
     - name: Run Tests in Docker
-      run: docker run --network="host" -e CI=true sortify-backend ./gradlew clean test
-      working-directory: backend
+      run: docker exec sortify-backend-container ./gradlew clean test
 
     - name: Upload Test Result
       if: always()

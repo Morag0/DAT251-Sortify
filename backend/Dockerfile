@@ -3,32 +3,23 @@ FROM gradle:7.6-jdk17-alpine AS builder
 
 WORKDIR /app
 
-# Copy Gradle-related files first to leverage caching
-COPY gradlew gradlew
-COPY gradle gradle
-COPY build.gradle.kts settings.gradle.kts ./
+# Copy the entire project
+COPY . .
 
-# Copy the source code
-COPY src src
-
-# Ensure permissions for Gradle wrapper, build the JAR file (placed in /app), and verify that the JAR exists
+# Ensure permissions for Gradle wrapper and build the JAR file
 RUN chmod +x ./gradlew 
-RUN ./gradlew clean bootJar
-# RUN ls -l /app/build/libs/
-RUN ls -l /app/
+RUN ./gradlew clean bootJar --no-daemon
 
 # 2: Run the application
 FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
-# Copy the built JAR from the builder stage
+# Copy the built JAR file
 COPY --from=builder /app/build/libs/*.jar /app/app.jar
 
-# Verify JAR is copied
-RUN ls -l /app/
+# Expose the application port
+EXPOSE 9876
 
 # Command to run the application
 CMD ["java", "-jar", "/app/app.jar"]
-
-EXPOSE 9876
