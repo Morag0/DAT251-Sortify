@@ -42,12 +42,12 @@ cd DAT251-Sortify/backend
 ./gradlew bootRun
 ```
 
-**3️⃣ Run the Backend with Docker Locally**
+**3️⃣ Run and Test the Backend with Docker Locally**
 To run the backend using Docker locally, follow these steps:
 
 1. ### START DOCKER DESKTOP ON YOUR LOCAL MACHINE
 
-2. Run the following commands:
+2. Using docker OR docker-compose
 
 ```bash
 # Build the Docker Image (remember the period after "sortify-backend")
@@ -55,6 +55,27 @@ docker build -t sortify-backend .
 
 # Run the Docker container
 docker run -p 9876:9876 sortify-backend
+```
+
+```bash
+# Build the Docker Image with docker-compose
+docker-compose build --no-cache
+
+# Start container
+docker-compose up -d
+
+# Check logs that container has started
+docker logs sortify-backend-container
+```
+
+3. Run test with Gradle
+
+```bash
+# Run all tests
+./gradlew clean test
+
+# Only test backend is running
+./gradlew test --tests backend.DockerIntegrationTests
 ```
 
 The backend should now be running on http://localhost:9876. You can access it by visiting this URL in your browser or through an API client like Postman.
