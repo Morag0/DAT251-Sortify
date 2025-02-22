@@ -33,22 +33,28 @@ jobs:
 
     - name: Build JAR with Gradle
       working-directory: backend
-      run: ./gradlew bootJar --no-daemon  # Ensure JAR is built before Docker
-
+      run: ./gradlew bootJar --no-daemon
+      
     - name: Verify Docker Compose Version
-      run: docker compose version # Check if Docker Compose is installed
+      run: docker compose version
     
-    - name: Build Docker Image
-      run: docker compose build --no-cache  # Ensures the latest image is built before starting
+    - name: Build Latest Docker Image
+      run: docker compose build --no-cache 
 
     - name: Start Backend with Docker Compose
-      run: docker compose up -d  # Start backend in detached mode
-    
-    - name: Check running containers
-      run: docker ps -a # Check if the container is running
-    
+      run: docker compose up -d 
+
     - name: Show Backend Logs
-      run: docker logs sortify-backend-container || echo "No logs avaliable" # Check logs for any errors
+      run: docker logs sortify-backend-container || echo "No logs avaliable"
+    
+    - name: List all running containers
+      run: docker ps -a
+
+    - name: Check Running Processes Inside the Container
+      run: docker exec sortify-backend-container ps aux || echo "No processes running"
+
+    - name: Check Open Ports in the Container
+      run: docker exec sortify-backend-container netstat -tlnp || echo "No open ports"
     
     - name: Check if the App is Actually Listening on Port 9876
       run: docker exec -it sortify-backend-container netstat -tlnp | grep 9876 || echo "App is not listening on port 9876"
